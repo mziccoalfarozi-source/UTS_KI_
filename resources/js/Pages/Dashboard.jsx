@@ -1,6 +1,6 @@
-import { Head, router, usePage } from '@inertiajs/react';
+import { Head, Link, router, usePage } from '@inertiajs/react';
 
-export default function Dashboard({ area }) {
+export default function Dashboard({ area, signingKey = null }) {
     const { auth } = usePage().props;
 
     function logout() {
@@ -40,6 +40,27 @@ export default function Dashboard({ area }) {
                             </div>
                         </dl>
                     </div>
+
+                    {area === 'SIGNER' && (
+                        <div className="border border-zinc-200 bg-white p-6 shadow-sm">
+                            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                                <div className="flex flex-col gap-1">
+                                    <h2 className="font-semibold">Signing Key</h2>
+                                    <p className="text-sm text-zinc-600">
+                                        {signingKey === null
+                                            ? 'Signing key belum dibuat.'
+                                            : `Signing key tersedia sejak ${new Date(signingKey.created_at).toLocaleString('id-ID')}.`}
+                                    </p>
+                                </div>
+                                <Link
+                                    href="/keys"
+                                    className="inline-flex h-10 items-center justify-center bg-zinc-900 px-4 text-sm font-semibold text-white hover:bg-zinc-800"
+                                >
+                                    {signingKey === null ? 'Buat signing key' : 'Lihat signing key'}
+                                </Link>
+                            </div>
+                        </div>
+                    )}
 
                     <p className="text-sm text-zinc-600">Fitur lanjutan belum diimplementasikan pada phase ini.</p>
                 </section>
