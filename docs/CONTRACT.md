@@ -670,6 +670,7 @@ Kolom:
 | `key_id` | UUID | Ya | Default `NULL`; foreign key ke `signing_keys.id` `ON DELETE RESTRICT` |
 | `signature` | VARCHAR(344) | Ya | Default `NULL`; Base64 dari signature RSA-2048 sepanjang 256 raw bytes |
 | `signed_at` | TIMESTAMP(0) WITHOUT TIME ZONE | Ya | Default `NULL` |
+| `created_at` | TIMESTAMP(0) WITHOUT TIME ZONE | Tidak | `CURRENT_TIMESTAMP` |
 
 Constraint, index, dan foreign key:
 
