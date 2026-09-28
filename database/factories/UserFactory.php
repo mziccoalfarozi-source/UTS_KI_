@@ -33,4 +33,14 @@ class UserFactory extends Factory
             'institution' => fake()->company(),
         ];
     }
+
+    public function admin(): static
+    {
+        return $this->state(fn (): array => ['role' => Role::Admin]);
+    }
+
+    public function signer(): static
+    {
+        return $this->state(fn (): array => ['role' => Role::Signer]);
+    }
 }
