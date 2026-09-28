@@ -42,27 +42,59 @@ export default function Dashboard({ area, signingKey = null }) {
                     </div>
 
                     {area === 'SIGNER' && (
+                        <div className="grid gap-6 md:grid-cols-2">
+                            <div className="border border-zinc-200 bg-white p-6 shadow-sm">
+                                <div className="flex h-full flex-col justify-between gap-4">
+                                    <div className="flex flex-col gap-1">
+                                        <h2 className="font-semibold">Dokumen Saya</h2>
+                                        <p className="text-sm text-zinc-600">Lihat assignment dan urutan signing.</p>
+                                    </div>
+                                    <Link
+                                        href="/documents"
+                                        className="inline-flex h-10 items-center justify-center bg-zinc-900 px-4 text-sm font-semibold text-white hover:bg-zinc-800"
+                                    >
+                                        Buka dokumen
+                                    </Link>
+                                </div>
+                            </div>
+                            <div className="border border-zinc-200 bg-white p-6 shadow-sm">
+                                <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                                    <div className="flex flex-col gap-1">
+                                        <h2 className="font-semibold">Signing Key</h2>
+                                        <p className="text-sm text-zinc-600">
+                                            {signingKey === null
+                                                ? 'Signing key belum dibuat.'
+                                                : `Signing key tersedia sejak ${new Date(signingKey.created_at).toLocaleString('id-ID')}.`}
+                                        </p>
+                                    </div>
+                                    <Link
+                                        href="/keys"
+                                        className="inline-flex h-10 items-center justify-center bg-zinc-900 px-4 text-sm font-semibold text-white hover:bg-zinc-800"
+                                    >
+                                        {signingKey === null ? 'Buat signing key' : 'Lihat signing key'}
+                                    </Link>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {area === 'ADMIN' && (
                         <div className="border border-zinc-200 bg-white p-6 shadow-sm">
                             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                                 <div className="flex flex-col gap-1">
-                                    <h2 className="font-semibold">Signing Key</h2>
-                                    <p className="text-sm text-zinc-600">
-                                        {signingKey === null
-                                            ? 'Signing key belum dibuat.'
-                                            : `Signing key tersedia sejak ${new Date(signingKey.created_at).toLocaleString('id-ID')}.`}
-                                    </p>
+                                    <h2 className="font-semibold">Document Management</h2>
+                                    <p className="text-sm text-zinc-600">Kelola PDF final dan penugasan signer.</p>
                                 </div>
                                 <Link
-                                    href="/keys"
+                                    href="/documents"
                                     className="inline-flex h-10 items-center justify-center bg-zinc-900 px-4 text-sm font-semibold text-white hover:bg-zinc-800"
                                 >
-                                    {signingKey === null ? 'Buat signing key' : 'Lihat signing key'}
+                                    Buka dokumen
                                 </Link>
                             </div>
                         </div>
                     )}
 
-                    <p className="text-sm text-zinc-600">Fitur lanjutan belum diimplementasikan pada phase ini.</p>
                 </section>
             </main>
         </>

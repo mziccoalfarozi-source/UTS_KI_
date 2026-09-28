@@ -243,6 +243,8 @@ Base URL tidak boleh hard-coded ke `localhost`. Nilainya harus berasal dari envi
 VERIFY_BASE_URL
 ```
 
+Upload PDF sumber dibatasi maksimum 10 MiB (`10.240 KiB` atau `10.485.760 byte`). Validasi wajib dilakukan server-side sebelum finalization.
+
 ## 6. Halaman Pengesahan PDF
 
 Halaman pengesahan ditambahkan sebelum hashing dan signing.

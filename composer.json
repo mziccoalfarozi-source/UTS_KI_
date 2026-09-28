@@ -7,9 +7,11 @@
     "license": "MIT",
     "require": {
         "php": "^8.3",
+        "endroid/qr-code": "^5.1",
         "inertiajs/inertia-laravel": "^3.4",
         "laravel/framework": "^13.17",
         "laravel/tinker": "^3.0",
+        "phpseclib/phpseclib": ">=3.0 <4.0",
         "setasign/fpdf": "^1.9",
         "setasign/fpdi": "^2.6"
     },
