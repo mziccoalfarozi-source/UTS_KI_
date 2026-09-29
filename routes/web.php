@@ -5,6 +5,7 @@ use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\DocumentSigningController;
 use App\Http\Controllers\SigningKeyController;
+use App\Http\Controllers\VerificationController;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -30,9 +31,9 @@ Route::middleware('guest')->group(function (): void {
         ->name('login.store');
 });
 
-Route::get('/verify/{token}', fn (string $token): Response => Inertia::render('Verify/Placeholder', [
-    'token' => $token,
-]))->name('verify.show');
+Route::get('/verify', [VerificationController::class, 'index'])->name('verify.index');
+Route::get('/verify/{token}', [VerificationController::class, 'show'])->name('verify.show');
+Route::post('/verify/{token}', [VerificationController::class, 'verify'])->name('verify.verify');
 
 Route::middleware('auth')->group(function (): void {
     Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
@@ -42,6 +43,7 @@ Route::middleware('auth')->group(function (): void {
         ->name('documents.download');
 
     Route::middleware('role:ADMIN')->group(function (): void {
+        Route::get('/admin/logs', [VerificationController::class, 'logs'])->name('admin.logs');
         Route::get('/admin/dashboard', fn () => Inertia::render('Dashboard', [
             'area' => 'ADMIN',
         ]))->name('admin.dashboard');

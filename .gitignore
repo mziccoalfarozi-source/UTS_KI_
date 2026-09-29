@@ -19,6 +19,9 @@
 /public/hot
 /public/storage
 /storage/*.key
+/storage/*.tmp
+dev.sh
+start-pg.ps1
 /storage/pail
 /vendor
 _ide_helper.php

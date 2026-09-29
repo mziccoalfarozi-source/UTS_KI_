@@ -49,6 +49,7 @@ class DocumentFinalizer
         string $verificationToken,
     ): array {
         $qrPath = null;
+        $convertedPath = null;
 
         try {
             if (! is_file($sourcePath) || ! is_readable($sourcePath) || is_file($outputPath)) {
@@ -57,11 +58,26 @@ class DocumentFinalizer
 
             File::ensureDirectoryExists(dirname($outputPath));
 
+            // Downconvert PDF ke 1.4 via Ghostscript jika diperlukan (PDF 1.5+).
+            $fpdiSourcePath = $sourcePath;
+            $pdfVersion = $this->detectPdfVersion($sourcePath);
+
+            if ($pdfVersion > 1.4) {
+                $convertedPath = tempnam(dirname($outputPath), 'gs-');
+
+                if ($convertedPath === false) {
+                    throw new DocumentFinalizationException;
+                }
+
+                $this->ghostscriptDownconvert($sourcePath, $convertedPath);
+                $fpdiSourcePath = $convertedPath;
+            }
+
             $verificationUrl = $this->verificationUrl($verificationToken);
             $qrPath = $this->writeQrImage($verificationUrl, dirname($outputPath));
             $pdf = new Fpdi;
             $pdf->SetCompression(false);
-            $inputPages = $pdf->setSourceFile($sourcePath);
+            $inputPages = $pdf->setSourceFile($fpdiSourcePath);
 
             for ($pageNumber = 1; $pageNumber <= $inputPages; $pageNumber++) {
                 $templateId = $pdf->importPage($pageNumber);
@@ -100,7 +116,85 @@ class DocumentFinalizer
             if (is_string($qrPath)) {
                 File::delete($qrPath);
             }
+
+            if (is_string($convertedPath)) {
+                File::delete($convertedPath);
+            }
         }
+    }
+
+    private function detectPdfVersion(string $path): float
+    {
+        $handle = fopen($path, 'rb');
+
+        if ($handle === false) {
+            return 1.4;
+        }
+
+        $header = fread($handle, 16);
+        fclose($handle);
+
+        if ($header === false) {
+            return 1.4;
+        }
+
+        if (preg_match('/%PDF-(\d+\.\d+)/', $header, $matches)) {
+            return (float) $matches[1];
+        }
+
+        return 1.4;
+    }
+
+    private function ghostscriptDownconvert(string $inputPath, string $outputPath): void
+    {
+        $gsExecutable = $this->findGhostscript();
+
+        if ($gsExecutable === null) {
+            throw new DocumentFinalizationException;
+        }
+
+        $command = sprintf(
+            '%s -dBATCH -dNOPAUSE -dNOSAFER -dCompatibilityLevel=1.4 -sDEVICE=pdfwrite -sOutputFile=%s %s 2>&1',
+            escapeshellarg($gsExecutable),
+            escapeshellarg($outputPath),
+            escapeshellarg($inputPath),
+        );
+
+        exec($command, $output, $exitCode);
+
+        if ($exitCode !== 0 || ! is_file($outputPath) || filesize($outputPath) === 0) {
+            throw new DocumentFinalizationException;
+        }
+    }
+
+    private function findGhostscript(): ?string
+    {
+        // Lokasi default Windows installer Ghostscript
+        $windowsCandidates = glob('C:\\Program Files\\gs\\gs*\\bin\\gswin64c.exe') ?: [];
+
+        foreach ($windowsCandidates as $candidate) {
+            if (is_executable($candidate)) {
+                return $candidate;
+            }
+        }
+
+        // Fallback: cek PATH (Linux/macOS/Windows with PATH set)
+        foreach (['gswin64c', 'gswin32c', 'gs'] as $bin) {
+            exec('where '.$bin.' 2>nul', $out, $code);
+
+            if ($code === 0 && ! empty($out[0]) && is_executable($out[0])) {
+                return $out[0];
+            }
+
+            // Linux/macOS
+            exec('which '.$bin.' 2>/dev/null', $out2, $code2);
+
+            if ($code2 === 0 && ! empty($out2[0]) && is_executable($out2[0])) {
+                return $out2[0];
+            }
+        }
+
+        return null;
     }
 
     private function writeQrImage(string $verificationUrl, string $directory): string

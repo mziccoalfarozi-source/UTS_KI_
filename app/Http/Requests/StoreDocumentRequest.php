@@ -29,7 +29,7 @@ class StoreDocumentRequest extends FormRequest
             'title' => ['required', 'string', 'max:255'],
             'institution' => ['required', 'string', 'max:255'],
             'document_date' => ['required', 'date'],
-            'pdf' => ['required', 'file', 'mimetypes:application/pdf,application/x-pdf', 'max:10240'],
+            'pdf' => ['required', 'file', 'mimes:pdf', 'max:10240'],
             'signers' => ['required', 'array', 'min:1'],
             'signers.*.user_id' => [
                 'required',
