@@ -1,102 +1,96 @@
+import AppShell from '../Components/AppShell';
+import { Card, MetaItem, SectionHeading, StatusBadge } from '../Components/Ui';
 import { Head, Link, router, usePage } from '@inertiajs/react';
 
 export default function Dashboard({ area, signingKey = null }) {
     const { auth } = usePage().props;
-
-    function logout() {
-        router.post('/logout');
-    }
+    const isAdmin = area === 'ADMIN';
 
     return (
         <>
-            <Head title={`${area} Dashboard`} />
-            <main className="min-h-screen bg-zinc-100">
-                <header className="border-b border-zinc-200 bg-white">
-                    <div className="mx-auto flex max-w-5xl items-center justify-between gap-4 px-5 py-4">
-                        <div>
-                            <p className="text-sm font-semibold text-emerald-700">Secure Document Signature</p>
-                            <h1 className="text-lg font-semibold">{area} Dashboard</h1>
-                        </div>
-                        <button
-                            type="button"
-                            onClick={logout}
-                            className="border border-zinc-300 bg-white px-4 py-2 text-sm font-semibold hover:bg-zinc-50"
-                        >
-                            Logout
-                        </button>
-                    </div>
-                </header>
-
-                <section className="mx-auto flex max-w-5xl flex-col gap-6 px-5 py-10">
-                    <div className="border border-zinc-200 bg-white p-6 shadow-sm">
+            <Head title={isAdmin ? 'Dashboard Admin' : 'Dashboard Penandatangan'} />
+            <AppShell
+                title={isAdmin ? 'Dashboard Admin' : 'Dashboard Penandatangan'}
+                maxWidth="max-w-5xl"
+                actions={
+                    <button type="button" onClick={() => router.post('/logout')} className="ui-button-secondary">
+                        Keluar
+                    </button>
+                }
+            >
+                <div className="flex flex-col gap-7">
+                    <Card className="p-5 sm:p-6">
                         <dl className="grid gap-5 sm:grid-cols-2">
-                            <div className="flex flex-col gap-1">
-                                <dt className="text-xs font-semibold uppercase text-zinc-500">Nama</dt>
-                                <dd className="font-medium">{auth.user.name}</dd>
-                            </div>
-                            <div className="flex flex-col gap-1">
-                                <dt className="text-xs font-semibold uppercase text-zinc-500">Role</dt>
-                                <dd className="font-medium">{auth.user.role}</dd>
-                            </div>
+                            <MetaItem label="Nama" value={auth.user.name} />
+                            <MetaItem label="Role">
+                                <StatusBadge status={auth.user.role} />
+                            </MetaItem>
                         </dl>
-                    </div>
+                    </Card>
 
-                    {area === 'SIGNER' && (
-                        <div className="grid gap-6 md:grid-cols-2">
-                            <div className="border border-zinc-200 bg-white p-6 shadow-sm">
-                                <div className="flex h-full flex-col justify-between gap-4">
-                                    <div className="flex flex-col gap-1">
-                                        <h2 className="font-semibold">Dokumen Saya</h2>
-                                        <p className="text-sm text-zinc-600">Lihat assignment dan urutan signing.</p>
-                                    </div>
-                                    <Link
+                    <section>
+                        <SectionHeading
+                            title="Akses utama"
+                            description="Pilih area kerja sesuai kebutuhan Anda."
+                        />
+                        <div className="mt-4 grid gap-4 md:grid-cols-2">
+                            {isAdmin ? (
+                                <>
+                                    <ActionCard
+                                        title="Manajemen Dokumen"
+                                        description="Kelola PDF final dan penugasan penandatangan."
                                         href="/documents"
-                                        className="inline-flex h-10 items-center justify-center bg-zinc-900 px-4 text-sm font-semibold text-white hover:bg-zinc-800"
-                                    >
-                                        Buka dokumen
-                                    </Link>
-                                </div>
-                            </div>
-                            <div className="border border-zinc-200 bg-white p-6 shadow-sm">
-                                <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                                    <div className="flex flex-col gap-1">
-                                        <h2 className="font-semibold">Signing Key</h2>
-                                        <p className="text-sm text-zinc-600">
-                                            {signingKey === null
+                                        action="Buka dokumen"
+                                    />
+                                    <ActionCard
+                                        title="Log Verifikasi"
+                                        description="Lihat riwayat dan hasil proses verifikasi dokumen."
+                                        href="/admin/logs"
+                                        action="Lihat log"
+                                    />
+                                </>
+                            ) : (
+                                <>
+                                    <ActionCard
+                                        title="Dokumen Saya"
+                                        description="Lihat assignment, urutan, dan status penandatanganan."
+                                        href="/documents"
+                                        action="Buka dokumen"
+                                    />
+                                    <ActionCard
+                                        title="Signing Key"
+                                        description={
+                                            signingKey === null
                                                 ? 'Signing key belum dibuat.'
-                                                : `Signing key tersedia sejak ${new Date(signingKey.created_at).toLocaleString('id-ID')}.`}
-                                        </p>
-                                    </div>
-                                    <Link
+                                                : `Tersedia sejak ${new Date(signingKey.created_at).toLocaleString('id-ID')}.`
+                                        }
                                         href="/keys"
-                                        className="inline-flex h-10 items-center justify-center bg-zinc-900 px-4 text-sm font-semibold text-white hover:bg-zinc-800"
-                                    >
-                                        {signingKey === null ? 'Buat signing key' : 'Lihat signing key'}
-                                    </Link>
-                                </div>
-                            </div>
+                                        action={signingKey === null ? 'Buat signing key' : 'Lihat signing key'}
+                                        status={signingKey === null ? 'Belum tersedia' : 'Siap digunakan'}
+                                    />
+                                </>
+                            )}
                         </div>
-                    )}
-
-                    {area === 'ADMIN' && (
-                        <div className="border border-zinc-200 bg-white p-6 shadow-sm">
-                            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                                <div className="flex flex-col gap-1">
-                                    <h2 className="font-semibold">Document Management</h2>
-                                    <p className="text-sm text-zinc-600">Kelola PDF final dan penugasan signer.</p>
-                                </div>
-                                <Link
-                                    href="/documents"
-                                    className="inline-flex h-10 items-center justify-center bg-zinc-900 px-4 text-sm font-semibold text-white hover:bg-zinc-800"
-                                >
-                                    Buka dokumen
-                                </Link>
-                            </div>
-                        </div>
-                    )}
-
-                </section>
-            </main>
+                    </section>
+                </div>
+            </AppShell>
         </>
+    );
+}
+
+function ActionCard({ title, description, href, action, status = null }) {
+    return (
+        <Card className="flex min-h-48 flex-col justify-between p-5 sm:p-6">
+            <div>
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                    <h3 className="font-semibold text-zinc-950">{title}</h3>
+                    {status && <span className="text-xs font-semibold text-zinc-500">{status}</span>}
+                </div>
+                <p className="mt-2 text-sm leading-6 text-zinc-600">{description}</p>
+            </div>
+            <Link href={href} className="ui-button-primary mt-6 w-full sm:w-fit">
+                {action}
+            </Link>
+        </Card>
     );
 }

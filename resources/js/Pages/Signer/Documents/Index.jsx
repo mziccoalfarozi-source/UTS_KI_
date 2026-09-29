@@ -1,75 +1,62 @@
+import AppShell, { BackLink } from '../../../Components/AppShell';
+import { Alert, EmptyState, SectionHeading, StatusBadge } from '../../../Components/Ui';
 import { Head, Link } from '@inertiajs/react';
 
 export default function SignerDocumentIndex({ documents, hasSigningKey }) {
     return (
         <>
             <Head title="Dokumen Saya" />
-            <main className="min-h-screen bg-zinc-100">
-                <header className="border-b border-zinc-200 bg-white">
-                    <div className="mx-auto flex max-w-5xl items-center justify-between gap-4 px-5 py-4">
-                        <div>
-                            <p className="text-sm font-semibold text-emerald-700">Secure Document Signature</p>
-                            <h1 className="text-lg font-semibold">Dokumen Saya</h1>
-                        </div>
-                        <Link
-                            href="/signer/dashboard"
-                            className="text-sm font-semibold text-zinc-700 hover:text-zinc-950"
-                        >
-                            Dashboard
-                        </Link>
-                    </div>
-                </header>
-
-                <section className="mx-auto flex max-w-5xl flex-col gap-5 px-5 py-8">
+            <AppShell title="Dokumen Saya" actions={<BackLink href="/signer/dashboard">Dashboard</BackLink>} maxWidth="max-w-5xl">
+                <div className="flex flex-col gap-5">
                     {!hasSigningKey && (
-                        <div className="border border-amber-300 bg-amber-50 p-4 text-sm text-amber-900">
-                            Signing key belum tersedia. Buat signing key sebelum menandatangani dokumen.
-                        </div>
+                        <Alert tone="warning">
+                            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                                <span>Signing key belum tersedia. Buat key sebelum menandatangani dokumen.</span>
+                                <Link href="/keys" className="font-semibold underline underline-offset-2">Buat signing key</Link>
+                            </div>
+                        </Alert>
                     )}
 
-                    <div className="overflow-x-auto border border-zinc-200 bg-white shadow-sm">
-                        <table className="w-full text-left text-sm">
-                            <thead className="border-b border-zinc-200 bg-zinc-50 text-xs uppercase text-zinc-500">
-                                <tr>
-                                    <th className="px-4 py-3">Dokumen</th>
-                                    <th className="px-4 py-3">Urutan</th>
-                                    <th className="px-4 py-3">Assignment</th>
-                                    <th className="px-4 py-3">Dokumen</th>
-                                    <th className="px-4 py-3">Akses</th>
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-zinc-200">
-                                {documents.map((document) => (
-                                    <tr key={document.id}>
-                                        <td className="px-4 py-3">
-                                            <p className="font-semibold">{document.title}</p>
-                                            <p className="text-zinc-500">{document.institution}</p>
-                                        </td>
-                                        <td className="px-4 py-3">{document.sign_order}</td>
-                                        <td className="px-4 py-3">{document.assignment_status}</td>
-                                        <td className="px-4 py-3">{document.document_status}</td>
-                                        <td className="px-4 py-3">
-                                            <Link
-                                                href={`/documents/${document.id}`}
-                                                className="font-semibold text-emerald-700 hover:text-emerald-800"
-                                            >
-                                                {document.can_sign ? 'Tandatangani' : 'Lihat detail'}
-                                            </Link>
-                                        </td>
-                                    </tr>
-                                ))}
-                                {documents.length === 0 && (
-                                    <tr>
-                                        <td className="px-4 py-8 text-center text-zinc-500" colSpan="5">
-                                            Belum ada dokumen yang ditugaskan.
-                                        </td>
-                                    </tr>
-                                )}
-                            </tbody>
-                        </table>
+                    <SectionHeading title="Assignment penandatanganan" description="Dokumen yang ditugaskan kepada akun Anda." />
+                    <div className="ui-card overflow-hidden p-0">
+                        {documents.length > 0 ? (
+                            <div className="overflow-x-auto">
+                                <table className="ui-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Dokumen</th>
+                                            <th>Urutan</th>
+                                            <th>Assignment</th>
+                                            <th>Status dokumen</th>
+                                            <th><span className="sr-only">Aksi</span></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {documents.map((document) => (
+                                            <tr key={document.id}>
+                                                <td>
+                                                    <p className="font-semibold text-zinc-950">{document.title}</p>
+                                                    <p className="mt-0.5 text-xs text-zinc-500">{document.institution}</p>
+                                                </td>
+                                                <td className="font-semibold">{document.sign_order}</td>
+                                                <td><StatusBadge status={document.assignment_status} /></td>
+                                                <td><StatusBadge status={document.document_status} /></td>
+                                                <td className="text-right">
+                                                    <Link href={`/documents/${document.id}`} className="ui-link whitespace-nowrap">
+                                                        {document.can_sign ? 'Tandatangani' : 'Lihat detail'}
+                                                    </Link>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        ) : (
+                            <EmptyState title="Belum ada assignment" description="Dokumen yang ditugaskan kepada Anda akan tampil di sini." />
+                        )}
                     </div>
-                </section>
-            </main>
+                </div>
+            </AppShell>
         </>
     );
 }

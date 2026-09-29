@@ -8,3 +8,63 @@
     --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';
 }
+
+@layer base {
+    body {
+        @apply bg-zinc-100 text-zinc-950 antialiased;
+    }
+
+    button,
+    a,
+    input,
+    select,
+    textarea {
+        @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 focus-visible:ring-offset-2;
+    }
+}
+
+@layer components {
+    .ui-card {
+        @apply rounded-lg border border-zinc-200 bg-white shadow-sm;
+    }
+
+    .ui-input {
+        @apply min-h-11 w-full rounded-md border border-zinc-300 bg-white px-3 text-sm text-zinc-950 shadow-xs outline-none transition placeholder:text-zinc-400 hover:border-zinc-400 focus:border-emerald-700 focus:ring-2 focus:ring-emerald-100;
+    }
+
+    .ui-button-primary {
+        @apply inline-flex min-h-11 items-center justify-center rounded-md bg-zinc-900 px-4 text-sm font-semibold text-white transition hover:bg-zinc-700 disabled:cursor-not-allowed disabled:opacity-50;
+    }
+
+    .ui-button-secondary {
+        @apply inline-flex min-h-10 items-center justify-center rounded-md border border-zinc-300 bg-white px-4 text-sm font-semibold text-zinc-700 transition hover:border-zinc-400 hover:bg-zinc-50 disabled:cursor-not-allowed disabled:opacity-50;
+    }
+
+    .ui-link {
+        @apply font-semibold text-emerald-700 underline-offset-4 hover:text-emerald-900 hover:underline;
+    }
+
+    .ui-table {
+        @apply min-w-full text-left text-sm;
+    }
+
+    .ui-table thead {
+        @apply border-b border-zinc-200 bg-zinc-50 text-xs text-zinc-600 uppercase;
+    }
+
+    .ui-table th {
+        @apply whitespace-nowrap px-4 py-3 font-semibold;
+    }
+
+    .ui-table td {
+        @apply px-4 py-3 align-middle;
+    }
+
+    .ui-table tbody {
+        @apply divide-y divide-zinc-200;
+    }
+
+    .ui-table tbody tr {
+        @apply transition hover:bg-zinc-50;
+    }
+}

@@ -1,10 +1,8 @@
-import { Head, useForm } from '@inertiajs/react';
+import { FieldError } from '../../Components/Ui';
+import { Head, Link, useForm } from '@inertiajs/react';
 
 export default function Login() {
-    const { data, setData, post, processing, errors } = useForm({
-        email: '',
-        password: '',
-    });
+    const { data, setData, post, processing, errors } = useForm({ email: '', password: '' });
 
     function submit(event) {
         event.preventDefault();
@@ -13,53 +11,69 @@ export default function Login() {
 
     return (
         <>
-            <Head title="Login" />
-            <main className="flex min-h-screen items-center justify-center bg-zinc-100 px-4 py-10">
-                <section className="w-full max-w-sm border border-zinc-200 bg-white p-7 shadow-sm">
-                    <div className="flex flex-col gap-2">
-                        <p className="text-sm font-semibold text-emerald-700">Secure Document Signature</p>
-                        <h1 className="text-2xl font-semibold">Login</h1>
-                        <p className="text-sm text-zinc-600">Masuk menggunakan akun administrator atau signer.</p>
+            <Head title="Masuk" />
+            <main className="grid min-h-screen bg-zinc-100 lg:grid-cols-[minmax(0,1fr)_460px]">
+                <section className="hidden bg-zinc-900 p-12 text-white lg:flex lg:flex-col lg:justify-between">
+                    <p className="text-sm font-semibold text-emerald-400">Secure Document Signature</p>
+                    <div className="max-w-xl">
+                        <p className="text-sm font-semibold text-emerald-400">Keamanan dokumen</p>
+                        <h1 className="mt-3 text-4xl font-semibold">Tanda tangani dan periksa integritas dokumen.</h1>
+                        <p className="mt-4 max-w-lg text-base leading-7 text-zinc-300">
+                            Akses terkontrol untuk administrator dan penandatangan dokumen digital.
+                        </p>
                     </div>
+                    <Link href="/verify" className="w-fit text-sm font-semibold text-zinc-300 hover:text-white hover:underline">
+                        Verifikasi dokumen publik
+                    </Link>
+                </section>
 
-                    <form className="mt-7 flex flex-col gap-5" onSubmit={submit}>
-                        <label className="flex flex-col gap-2 text-sm font-medium" htmlFor="email">
-                            Email
-                            <input
-                                id="email"
-                                type="email"
-                                value={data.email}
-                                onChange={(event) => setData('email', event.target.value)}
-                                autoComplete="email"
-                                autoFocus
-                                required
-                                className="h-11 border border-zinc-300 px-3 font-normal outline-none focus:border-emerald-700 focus:ring-2 focus:ring-emerald-100"
-                            />
-                            {errors.email && <span className="font-normal text-red-700">{errors.email}</span>}
-                        </label>
+                <section className="flex items-center justify-center px-4 py-10 sm:px-8">
+                    <div className="w-full max-w-sm">
+                        <div className="mb-7 lg:hidden">
+                            <p className="text-sm font-semibold text-emerald-700">Secure Document Signature</p>
+                        </div>
+                        <div className="ui-card p-6 sm:p-8">
+                            <h2 className="text-2xl font-semibold text-zinc-950">Masuk</h2>
+                            <p className="mt-2 text-sm leading-6 text-zinc-600">
+                                Gunakan akun administrator atau penandatangan Anda.
+                            </p>
 
-                        <label className="flex flex-col gap-2 text-sm font-medium" htmlFor="password">
-                            Password
-                            <input
-                                id="password"
-                                type="password"
-                                value={data.password}
-                                onChange={(event) => setData('password', event.target.value)}
-                                autoComplete="current-password"
-                                required
-                                className="h-11 border border-zinc-300 px-3 font-normal outline-none focus:border-emerald-700 focus:ring-2 focus:ring-emerald-100"
-                            />
-                            {errors.password && <span className="font-normal text-red-700">{errors.password}</span>}
-                        </label>
+                            <form className="mt-7 flex flex-col gap-5" onSubmit={submit}>
+                                <label className="flex flex-col gap-2 text-sm font-medium" htmlFor="email">
+                                    Email
+                                    <input
+                                        id="email"
+                                        type="email"
+                                        value={data.email}
+                                        onChange={(event) => setData('email', event.target.value)}
+                                        autoComplete="email"
+                                        autoFocus
+                                        required
+                                        className="ui-input"
+                                    />
+                                    <FieldError>{errors.email}</FieldError>
+                                </label>
 
-                        <button
-                            type="submit"
-                            disabled={processing}
-                            className="h-11 bg-zinc-900 px-4 text-sm font-semibold text-white hover:bg-zinc-800 disabled:cursor-not-allowed disabled:opacity-60"
-                        >
-                            {processing ? 'Memproses...' : 'Login'}
-                        </button>
-                    </form>
+                                <label className="flex flex-col gap-2 text-sm font-medium" htmlFor="password">
+                                    Password
+                                    <input
+                                        id="password"
+                                        type="password"
+                                        value={data.password}
+                                        onChange={(event) => setData('password', event.target.value)}
+                                        autoComplete="current-password"
+                                        required
+                                        className="ui-input"
+                                    />
+                                    <FieldError>{errors.password}</FieldError>
+                                </label>
+
+                                <button type="submit" disabled={processing} className="ui-button-primary w-full">
+                                    {processing ? 'Memproses...' : 'Masuk'}
+                                </button>
+                            </form>
+                        </div>
+                    </div>
                 </section>
             </main>
         </>

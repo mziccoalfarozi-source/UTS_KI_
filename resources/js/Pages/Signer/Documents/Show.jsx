@@ -1,4 +1,6 @@
-import { Head, Link, useForm } from '@inertiajs/react';
+import AppShell, { BackLink } from '../../../Components/AppShell';
+import { Alert, Card, FieldError, MetaItem, SectionHeading, StatusBadge } from '../../../Components/Ui';
+import { Head, useForm } from '@inertiajs/react';
 
 export default function SignerDocumentShow({ document, assignment }) {
     const { data, setData, post, processing, errors, reset } = useForm({
@@ -16,120 +18,89 @@ export default function SignerDocumentShow({ document, assignment }) {
     return (
         <>
             <Head title={document.title} />
-            <main className="min-h-screen bg-zinc-100">
-                <header className="border-b border-zinc-200 bg-white">
-                    <div className="mx-auto flex max-w-5xl items-center justify-between gap-4 px-5 py-4">
-                        <div>
-                            <p className="text-sm font-semibold text-emerald-700">Secure Document Signature</p>
-                            <h1 className="text-lg font-semibold">Detail Assignment</h1>
-                        </div>
-                        <Link href="/documents" className="text-sm font-semibold text-zinc-700 hover:text-zinc-950">
-                            Kembali
-                        </Link>
-                    </div>
-                </header>
-
-                <div className="mx-auto grid max-w-5xl gap-6 px-5 py-8 lg:grid-cols-[minmax(0,1fr)_320px]">
+            <AppShell title="Detail Assignment" actions={<BackLink href="/documents">Dokumen saya</BackLink>} maxWidth="max-w-5xl">
+                <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
                     <div className="flex min-w-0 flex-col gap-6">
-                        <section className="border border-zinc-200 bg-white p-6 shadow-sm">
-                            <h2 className="text-xl font-semibold">{document.title}</h2>
-                            <p className="mt-1 text-sm text-zinc-600">{document.institution}</p>
+                        <Card className="p-5 sm:p-6">
+                            <div className="flex flex-col gap-4 border-b border-zinc-200 pb-5 sm:flex-row sm:items-start sm:justify-between">
+                                <div>
+                                    <h2 className="text-xl font-semibold text-zinc-950">{document.title}</h2>
+                                    <p className="mt-1 text-sm text-zinc-600">{document.institution}</p>
+                                </div>
+                                <StatusBadge status={document.status} />
+                            </div>
                             <dl className="mt-5 grid gap-5 sm:grid-cols-2">
-                                <Item label="Tanggal" value={document.document_date} />
-                                <Item label="Status dokumen" value={document.status} />
-                                <Item label="File" value={document.original_filename} />
-                                <Item label="Urutan Anda" value={assignment.sign_order} />
+                                <MetaItem label="Tanggal" value={document.document_date} />
+                                <MetaItem label="File" value={document.original_filename} />
+                                <MetaItem label="Urutan Anda" value={assignment.sign_order} />
+                                <MetaItem label="Status assignment"><StatusBadge status={assignment.status} /></MetaItem>
                                 <div className="sm:col-span-2">
-                                    <Item label="Document hash" value={document.document_hash} mono />
+                                    <MetaItem label="Document hash" value={document.document_hash} mono />
                                 </div>
                             </dl>
-                            <a
-                                href={`/documents/${document.id}/download`}
-                                className="mt-6 inline-flex h-10 items-center bg-zinc-900 px-4 text-sm font-semibold text-white hover:bg-zinc-800"
-                            >
-                                Download PDF final
-                            </a>
-                        </section>
+                            <a href={`/documents/${document.id}/download`} className="ui-button-secondary mt-6">Download PDF final</a>
+                        </Card>
 
                         <section>
-                            <h2 className="mb-3 text-base font-semibold">Urutan penandatangan</h2>
-                            <div className="overflow-x-auto border border-zinc-200 bg-white shadow-sm">
-                                <table className="w-full text-left text-sm">
-                                    <thead className="border-b border-zinc-200 bg-zinc-50 text-xs uppercase text-zinc-500">
-                                        <tr>
-                                            <th className="px-4 py-3">Urutan</th>
-                                            <th className="px-4 py-3">Nama</th>
-                                            <th className="px-4 py-3">Jabatan</th>
-                                            <th className="px-4 py-3">Status</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody className="divide-y divide-zinc-200">
-                                        {document.signers.map((signer) => (
-                                            <tr key={signer.sign_order}>
-                                                <td className="px-4 py-3">{signer.sign_order}</td>
-                                                <td className="px-4 py-3 font-medium">{signer.name}</td>
-                                                <td className="px-4 py-3">{signer.position_title}</td>
-                                                <td className="px-4 py-3">{signer.status}</td>
+                            <SectionHeading title="Urutan penandatangan" description="Setiap signer dapat menandatangani setelah urutan sebelumnya selesai." />
+                            <div className="ui-card mt-4 overflow-hidden p-0">
+                                <div className="overflow-x-auto">
+                                    <table className="ui-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Urutan</th>
+                                                <th>Nama</th>
+                                                <th>Jabatan</th>
+                                                <th>Status</th>
                                             </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
+                                        </thead>
+                                        <tbody>
+                                            {document.signers.map((signer) => (
+                                                <tr key={signer.sign_order}>
+                                                    <td className="font-semibold">{signer.sign_order}</td>
+                                                    <td className="font-medium text-zinc-950">{signer.name}</td>
+                                                    <td className="text-zinc-600">{signer.position_title}</td>
+                                                    <td><StatusBadge status={signer.status} /></td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         </section>
                     </div>
 
-                    <aside className="h-fit border border-zinc-200 bg-white p-5 shadow-sm">
-                        <h2 className="font-semibold">Digital Signing</h2>
-                        <p className="mt-1 text-sm text-zinc-600">Status assignment: {assignment.status}</p>
+                    <Card className="p-5 sm:p-6 lg:sticky lg:top-6">
+                        <SectionHeading title="Digital Signing" description={`Urutan assignment: ${assignment.sign_order}`} />
+                        <div className="mt-4"><StatusBadge status={assignment.status} /></div>
 
                         {assignment.can_sign && (
-                            <form className="mt-5 flex flex-col gap-3" onSubmit={submit}>
-                                <label className="flex flex-col gap-2 text-sm font-medium">
-                                    Signing passphrase
-                                    <input
-                                        type="password"
-                                        value={data.signing_passphrase}
-                                        onChange={(event) => setData('signing_passphrase', event.target.value)}
-                                        autoComplete="off"
-                                        required
-                                        className="h-10 border border-zinc-300 px-3 outline-none focus:border-emerald-700"
-                                    />
-                                </label>
-                                {errors.signing_passphrase && (
-                                    <p className="text-sm text-red-700">{errors.signing_passphrase}</p>
-                                )}
-                                {errors.signing && <p className="text-sm text-red-700">{errors.signing}</p>}
-                                <button
-                                    type="submit"
-                                    disabled={processing}
-                                    className="h-10 bg-zinc-900 px-4 text-sm font-semibold text-white hover:bg-zinc-800 disabled:opacity-60"
-                                >
-                                    {processing ? 'Menandatangani...' : 'Tandatangani'}
+                            <form className="mt-5 flex flex-col gap-4" onSubmit={submit}>
+                                <div className="flex flex-col gap-2">
+                                    <label htmlFor="signing-passphrase" className="text-sm font-medium text-zinc-800">Signing passphrase</label>
+                                    <input id="signing-passphrase" type="password" value={data.signing_passphrase} onChange={(event) => setData('signing_passphrase', event.target.value)} autoComplete="off" required className="ui-input" />
+                                    <p className="text-xs leading-5 text-zinc-500">Passphrase digunakan untuk membuka signing key saat proses ini dan tidak disimpan.</p>
+                                    <FieldError>{errors.signing_passphrase}</FieldError>
+                                    <FieldError>{errors.signing}</FieldError>
+                                </div>
+                                <button type="submit" disabled={processing} className="ui-button-primary w-full">
+                                    {processing ? 'Menandatangani...' : 'Tandatangani dokumen'}
                                 </button>
                             </form>
                         )}
 
                         {!assignment.can_sign && assignment.waiting_for_previous && (
-                            <p className="mt-4 text-sm text-amber-800">Menunggu signer sebelumnya.</p>
+                            <div className="mt-5"><Alert tone="warning">Menunggu signer pada urutan sebelumnya.</Alert></div>
                         )}
                         {!assignment.can_sign && !assignment.has_signing_key && (
-                            <p className="mt-4 text-sm text-amber-800">Signing key belum tersedia.</p>
+                            <div className="mt-5"><Alert tone="warning">Signing key belum tersedia.</Alert></div>
                         )}
                         {assignment.status === 'SIGNED' && (
-                            <p className="mt-4 text-sm text-emerald-700">Assignment telah ditandatangani.</p>
+                            <div className="mt-5"><Alert tone="success">Assignment telah ditandatangani.</Alert></div>
                         )}
-                    </aside>
+                    </Card>
                 </div>
-            </main>
+            </AppShell>
         </>
-    );
-}
-
-function Item({ label, value, mono = false }) {
-    return (
-        <div className="flex min-w-0 flex-col gap-1">
-            <dt className="text-xs font-semibold uppercase text-zinc-500">{label}</dt>
-            <dd className={`break-all text-sm font-medium ${mono ? 'font-mono' : ''}`}>{value}</dd>
-        </div>
     );
 }

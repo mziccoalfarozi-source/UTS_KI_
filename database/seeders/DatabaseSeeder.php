@@ -39,5 +39,27 @@ class DatabaseSeeder extends Seeder
                 'institution' => 'Local Development',
             ],
         );
+
+        User::query()->updateOrCreate(
+            ['email' => 'signer2@example.test'],
+            [
+                'name' => 'Demo Signer 2',
+                'password' => Hash::make('SignerDemo123!'),
+                'role' => Role::Signer,
+                'position_title' => 'Document Signer 2',
+                'institution' => 'Local Development',
+            ],
+        );
+
+        User::query()->updateOrCreate(
+            ['email' => 'signer3@example.test'],
+            [
+                'name' => 'Demo Signer 3',
+                'password' => Hash::make('SignerDemo123!'),
+                'role' => Role::Signer,
+                'position_title' => 'Document Signer 3',
+                'institution' => 'Local Development',
+            ],
+        );
     }
 }
